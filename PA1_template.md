@@ -307,13 +307,6 @@ sum(is.na(steps$steps))
 ## [1] 0
 ```
 
-
-
-
-
-
-
-
 Reprocess the number of steps taken each day along with mean and median
 
 
@@ -418,4 +411,27 @@ median(steps_perday2$total_steps)
 The mean number of steps per day, having estimated and filled in NAs is 10766.19 and the median is 10766.19. These values do not differ much from the estimates from the first part of the assignment. The mean was consistent with the previously calculated value while the median was slightly higher than the previously calculated values. Imputing missing data on the estimates of the total daily number of steps resulted in causing both mean and median to be equal to the same value.
 
 
-## Are there differences in activity patterns between weekdays and weekends? 
+## Are there differences in activity patterns between weekdays and weekends?
+Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+To do this we use the mutate function to add a new column to the steps dataset. If the day of *date* is "Saturday" or "Sunday" this column is given the values "Weekend", and "Weekday" otherwise. The column is then converted to a factor variable.
+
+
+```r
+steps <- mutate(steps, time_of_week = ifelse(weekdays(date)=="Saturday"|weekdays(date)=="Sunday", "Weekend", "Weekday"))
+steps$time_of_week <- as.factor(as.character(steps$time_of_week))
+```
+
+The following creates a time series panel plot comparison of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days for weekday and weekends.
+
+We will utilize the *lattice* plotting library for this.
+
+
+```r
+library(lattice)
+weeksteps_perinterval <- ddply(steps, .(time_of_week, interval), summarize, average_steps=mean(steps))
+xyplot(average_steps ~ interval | time_of_week, data=weeksteps_perinterval, layout=c(1,2), type='l', xlab="Interval", ylab="Average Steps", main="Average Steps Per Interval Across all Days")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-17-1.png) 
+
